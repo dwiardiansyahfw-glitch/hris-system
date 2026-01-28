@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRIS System</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-box h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .login-box p {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .app-container {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .app-container.active {
+            display: block;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-tabs {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tabs button {
+            background: #f0f0f0;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .nav-tabs button:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .nav-tabs button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .content-area {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .content-area.active {
+            display: block;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.active {
+            display: block;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <h1>🏢 HRIS System</h1>
+            <p>Employee Management System</p>
+            <div id="loginAlert" class="alert alert-error"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required placeholder="email@company.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Password">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            </form>
+            <p style="margin-top: 20px; font-size: 12px; color: #999;">
+                Demo: admin@company.com / password123
+            </p>
+        </div>
+    </div>
+
+    <div id="mainApp" class="app-container">
+        <div class="header">
+            <h1>🏢 HRIS System</h1>
+            <div class="user-info">
+                <span id="userEmail">Loading...</span>
+                <button class="btn btn-small btn-danger" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="active" onclick="showTab('dashboard', event)">📊 Dashboard</button>
+            <button onclick="showTab('employees', event)">👥 Karyawan</button>
+            <button onclick="showTab('attendance', event)">📅 Absensi</button>
+            <button onclick="showTab('leave', event)">🏖️ Cuti</button>
+        </div>
+
+        <div id="dashboard" class="content-area active">
+            <h2 style="margin-bottom: 20px;">Dashboard</h2>
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <h3>Total Karyawan</h3>
+                    <div class="number" id="totalEmployees">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Hadir Hari Ini</h3>
+                    <div class="number" id="todayAttendance">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Tingkat Kehadiran</h3>
+                    <div class="number" id="attendanceRate">0%</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Cuti Pending</h3>
+                    <div class="number" id="pendingLeaves">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="employees" class="content-area">
+            <h2 style="margin-bottom: 20px;">Data Karyawan</h2>
+            <div id="employeeAlert" class="alert alert-success"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="openEmployeeModal()">+ Tambah Karyawan</button>
+                <div class="search-box">
+                    <input type="text" id="searchEmployee" placeholder="🔍 Cari karyawan..." onkeyup="filterEmployees()">
+                </div>
+            </div>
+            <div id="employeeLoading" class="loading">
+                <div class="spinner"></div>
+                <p>Memuat data...</p>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>NIK</th>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th>Jabatan</th>
+                            <th>Departemen</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeeTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="attendance" class="content-area">
+            <h2 style="margin-bottom: 20px;">Absensi</h2>
+            <div id="attendanceAlert" class="alert alert-success"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="openAttendanceModal()">+ Catat Absensi</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Tanggal</th>
+                            <th>Jam Masuk</th>
+                            <th>Jam Keluar</th>
+                            <th>Status</th>
+                            <th>Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="leave" class="content-area">
+            <h2 style="margin-bottom: 20px;">Manajemen Cuti</h2>
+            <div id="leaveAlert" class="alert alert-success"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="openLeaveModal()">+ Ajukan Cuti</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Tanggal Mulai</th>
+                            <th>Tanggal Selesai</th>
+                            <th>Jenis Cuti</th>
+                            <th>Status</th>
+                            <th>Alasan</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaveTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="employeeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="employeeModalTitle">Tambah Karyawan</h2>
+                <span class="close-btn" onclick="closeEmployeeModal()">&times;</span>
+            </div>
+            <form id="employeeForm">
+                <input type="hidden" id="employeeId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>NIK *</label>
+                        <input type="text" id="nik" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Lengkap *</label>
+                        <input type="text" id="nama" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Telepon</label>
+                        <input type="text" id="phone">
+                    </div>
+                    <div class="form-group">
+                        <label>Jabatan *</label>
+                        <input type="text" id="jabatan" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Departemen *</label>
+                        <select id="departemen" required>
+                            <option value="">Pilih Departemen</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal Masuk *</label>
+                        <input type="date" id="tanggalMasuk" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Status *</label>
+                    <select id="status" required>
+                        <option value="Aktif">Aktif</option>
+                        <option value="Non-Aktif">Non-Aktif</option>
+                        <option value="Resign">Resign</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="attendanceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Catat Absensi</h2>
+                <span class="close-btn" onclick="closeAttendanceModal()">&times;</span>
+            </div>
+            <form id="attendanceForm">
+                <div class="form-group">
+                    <label>Karyawan *</label>
+                    <select id="attEmployee" required>
+                        <option value="">Pilih Karyawan</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tanggal *</label>
+                    <input type="date" id="attTanggal" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Jam Masuk *</label>
+                        <input type="time" id="attJamMasuk" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Jam Keluar</label>
+                        <input type="time" id="attJamKeluar">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Status *</label>
+                    <select id="attStatus" required>
+                        <option value="Hadir">Hadir</option>
+                        <option value="Terlambat">Terlambat</option>
+                        <option value="Izin">Izin</option>
+                        <option value="Sakit">Sakit</option>
+                        <option value="Alpha">Alpha</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Keterangan</label>
+                    <textarea id="attKeterangan" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="leaveModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Ajukan Cuti</h2>
+                <span class="close-btn" onclick="closeLeaveModal()">&times;</span>
+            </div>
+            <form id="leaveForm">
+                <div class="form-group">
+                    <label>Karyawan *</label>
+                    <select id="leaveEmployee" required>
+                        <option value="">Pilih Karyawan</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tanggal Mulai *</label>
+                        <input type="date" id="leaveTanggalMulai" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal Selesai *</label>
+                        <input type="date" id="leaveTanggalSelesai" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Jenis Cuti *</label>
+                    <select id="leaveJenisCuti" required>
+                        <option value="">Pilih Jenis Cuti</option>
+                        <option value="Tahunan">Cuti Tahunan</option>
+                        <option value="Sakit">Cuti Sakit</option>
+                        <option value="Melahirkan">Cuti Melahirkan</option>
+                        <option value="Penting">Cuti Penting</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Alasan *</label>
+                    <textarea id="leaveAlasan" required rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Ajukan</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // GANTI KEDUA BARIS INI DENGAN API KEYS ANDA!
+        // ============================================
+        var SUPABASE_URL = 'https://cqheisrbylhkpfxjiaiu.supabase.co';
+        var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxaGVpc3JieWxoa3BmeGppYWl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NjI2NTksImV4cCI6MjA4NTEzODY1OX0.7Jj7VnRwckhgc8aIjvUCPuEDiRwK1l4VEMWIgwdptXw';
+        
+        // Initialize Supabase Client
+        var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Global variables
+        var currentUser = null;
+        var employeesData = [];
+        var departmentsData = [];
+
+        // Check session on page load
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                showMainApp();
+            }
+        });
+
+        // Login handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email,
+                password
+            });
+            
+            if (error) {
+                showAlert('loginAlert', 'Login gagal: ' + error.message, 'error');
+            } else {
+                currentUser = data.user;
+                showMainApp();
+            }
+        });
+
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            currentUser = null;
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('mainApp').classList.remove('active');
+        }
+
+        function showMainApp() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainApp').classList.add('active');
+            document.getElementById('userEmail').textContent = currentUser.email;
+            loadDashboardStats();
+            loadDepartments();
+        }
+
+        function showTab(tabName, event) {
+            const tabs = document.querySelectorAll('.content-area');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            const buttons = document.querySelectorAll('.nav-tabs button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'employees') loadEmployees();
+            if (tabName === 'attendance') loadAttendance();
+            if (tabName === 'leave') loadLeaveRequests();
+        }
+
+        async function loadDashboardStats() {
+            try {
+                const { data, error } = await supabaseClient.rpc('get_dashboard_stats');
+                
+                if (error) throw error;
+                
+                document.getElementById('totalEmployees').textContent = data.total_employees || 0;
+                document.getElementById('todayAttendance').textContent = data.today_attendance || 0;
+                document.getElementById('attendanceRate').textContent = (data.attendance_rate || 0) + '%';
+                document.getElementById('pendingLeaves').textContent = data.pending_leaves || 0;
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        async function loadDepartments() {
+            const { data, error } = await supabaseClient
+                .from('departments')
+                .select('*')
+                .order('name');
+            
+            if (!error) {
+                departmentsData = data;
+                const select = document.getElementById('departemen');
+                select.innerHTML = '<option value="">Pilih Departemen</option>';
+                data.forEach(dept => {
+                    select.innerHTML += `<option value="${dept.id}">${dept.name}</option>`;
+                });
+            }
+        }
+
+        async function loadEmployees() {
+            document.getElementById('employeeLoading').classList.add('active');
+            
+            const { data, error } = await supabaseClient
+                .from('employees')
+                .select('*, departments (name)')
+                .order('created_at', { ascending: false });
+            
+            document.getElementById('employeeLoading').classList.remove('active');
+            
+            if (!error) {
+                employeesData = data;
+                displayEmployees(data);
+                populateEmployeeSelects(data);
+            }
+        }
+
+        function displayEmployees(data) {
+            const tbody = document.getElementById('employeeTableBody');
+            tbody.innerHTML = '';
+            
+            data.forEach(emp => {
+                const row = `
+                    <tr>
+                        <td>${emp.nik}</td>
+                        <td>${emp.nama}</td>
+                        <td>${emp.email}</td>
+                        <td>${emp.jabatan}</td>
+                        <td>${emp.departments?.name || '-'}</td>
+                        <td><span style="color: ${emp.status === 'Aktif' ? 'green' : 'red'}">${emp.status}</span></td>
+                        <td>
+                            <button class="btn btn-small btn-primary" onclick="editEmployee(${emp.id})">Edit</button>
+                            <button class="btn btn-small btn-danger" onclick="deleteEmployee(${emp.id})">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function populateEmployeeSelects(data) {
+            const attSelect = document.getElementById('attEmployee');
+            const leaveSelect = document.getElementById('leaveEmployee');
+            
+            const options = data
+                .filter(e => e.status === 'Aktif')
+                .map(e => `<option value="${e.id}">${e.nik} - ${e.nama}</option>`)
+                .join('');
+            
+            attSelect.innerHTML = '<option value="">Pilih Karyawan</option>' + options;
+            leaveSelect.innerHTML = '<option value="">Pilih Karyawan</option>' + options;
+        }
+
+        function filterEmployees() {
+            const search = document.getElementById('searchEmployee').value.toLowerCase();
+            const filtered = employeesData.filter(emp => 
+                emp.nama.toLowerCase().includes(search) ||
+                emp.nik.toLowerCase().includes(search) ||
+                emp.email.toLowerCase().includes(search)
+            );
+            displayEmployees(filtered);
+        }
+
+        function openEmployeeModal() {
+            document.getElementById('employeeModalTitle').textContent = 'Tambah Karyawan';
+            document.getElementById('employeeForm').reset();
+            document.getElementById('employeeId').value = '';
+            document.getElementById('employeeModal').classList.add('active');
+        }
+
+        function closeEmployeeModal() {
+            document.getElementById('employeeModal').classList.remove('active');
+        }
+
+        async function editEmployee(id) {
+            const emp = employeesData.find(e => e.id === id);
+            if (emp) {
+                document.getElementById('employeeModalTitle').textContent = 'Edit Karyawan';
+                document.getElementById('employeeId').value = emp.id;
+                document.getElementById('nik').value = emp.nik;
+                document.getElementById('nama').value = emp.nama;
+                document.getElementById('email').value = emp.email;
+                document.getElementById('phone').value = emp.phone || '';
+                document.getElementById('jabatan').value = emp.jabatan;
+                document.getElementById('departemen').value = emp.department_id;
+                document.getElementById('tanggalMasuk').value = emp.tanggal_masuk;
+                document.getElementById('status').value = emp.status;
+                document.getElementById('employeeModal').classList.add('active');
+            }
+        }
+
+        document.getElementById('employeeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const employeeData = {
+                nik: document.getElementById('nik').value,
+                nama: document.getElementById('nama').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                jabatan: document.getElementById('jabatan').value,
+                department_id: document.getElementById('departemen').value,
+                tanggal_masuk: document.getElementById('tanggalMasuk').value,
+                status: document.getElementById('status').value
+            };
+            
+            const id = document.getElementById('employeeId').value;
+            let result;
+            
+            if (id) {
+                result = await supabaseClient
+                    .from('employees')
+                    .update(employeeData)
+                    .eq('id', id);
+            } else {
+                result = await supabaseClient
+                    .from('employees')
+                    .insert([employeeData]);
+            }
+            
+            if (!result.error) {
+                showAlert('employeeAlert', 'Data karyawan berhasil disimpan!', 'success');
+                closeEmployeeModal();
+                loadEmployees();
+                loadDashboardStats();
+            } else {
+                alert('Error: ' + result.error.message);
+            }
+        });
+
+        async function deleteEmployee(id) {
+            if (confirm('Yakin ingin menghapus karyawan ini?')) {
+                const { error } = await supabaseClient
+                    .from('employees')
+                    .delete()
+                    .eq('id', id);
+                
+                if (!error) {
+                    showAlert('employeeAlert', 'Karyawan berhasil dihapus', 'success');
+                    loadEmployees();
+                    loadDashboardStats();
+                }
+            }
+        }
+
+        async function loadAttendance() {
+            const { data, error } = await supabaseClient
+                .from('attendance')
+                .select('*, employees (nama, nik)')
+                .order('tanggal', { ascending: false })
+                .limit(100);
+            
+            if (!error) {
+                const tbody = document.getElementById('attendanceTableBody');
+                tbody.innerHTML = '';
+                
+                data.forEach(att => {
+                    const row = `
+                        <tr>
+                            <td>${att.employees?.nama || '-'}</td>
+                            <td>${att.tanggal}</td>
+                            <td>${att.jam_masuk || '-'}</td>
+                            <td>${att.jam_keluar || '-'}</td>
+                            <td>${att.status}</td>
+                            <td>${att.keterangan || '-'}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            }
+        }
+
+        function openAttendanceModal() {
+            document.getElementById('attendanceForm').reset();
+            document.getElementById('attTanggal').value = new Date().toISOString().split('T')[0];
+            document.getElementById('attendanceModal').classList.add('active');
+        }
+
+        function closeAttendanceModal() {
+            document.getElementById('attendanceModal').classList.remove('active');
+        }
+
+        document.getElementById('attendanceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const attendanceData = {
+                employee_id: document.getElementById('attEmployee').value,
+                tanggal: document.getElementById('attTanggal').value,
+                jam_masuk: document.getElementById('attJamMasuk').value,
+                jam_keluar: document.getElementById('attJamKeluar').value || null,
+                status: document.getElementById('attStatus').value,
+                keterangan: document.getElementById('attKeterangan').value
+            };
+            
+            const { error } = await supabaseClient
+                .from('attendance')
+                .insert([attendanceData]);
+            
+            if (!error) {
+                showAlert('attendanceAlert', 'Absensi berhasil dicatat!', 'success');
+                closeAttendanceModal();
+                loadAttendance();
+                loadDashboardStats();
+            } else {
+                alert('Error: ' + error.message);
+            }
+        });
+
+        async function loadLeaveRequests() {
+            const { data, error } = await supabaseClient
+                .from('leave_requests')
+                .select('*, employees (nama, nik)')
+                .order('created_at', { ascending: false });
+            
+            if (!error) {
+                const tbody = document.getElementById('leaveTableBody');
+                tbody.innerHTML = '';
+                
+                data.forEach(leave => {
+                    const statusColor = leave.status === 'Approved' ? 'green' : leave.status === 'Rejected' ? 'red' : 'orange';
+                    const row = `
+                        <tr>
+                            <td>${leave.employees?.nama || '-'}</td>
+                            <td>${leave.tanggal_mulai}</td>
+                            <td>${leave.tanggal_selesai}</td>
+                            <td>${leave.jenis_cuti}</td>
+                            <td><span style="color: ${statusColor}">${leave.status}</span></td>
+                            <td>${leave.alasan}</td>
+                            <td>
+                                ${leave.status === 'Pending' ? `
+                                    <button class="btn btn-small btn-success" onclick="updateLeaveStatus(${leave.id}, 'Approved')">Approve</button>
+                                    <button class="btn btn-small btn-danger" onclick="updateLeaveStatus(${leave.id}, 'Rejected')">Reject</button>
+                                ` : '-'}
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            }
+        }
+
+        function openLeaveModal() {
+            document.getElementById('leaveForm').reset();
+            document.getElementById('leaveModal').classList.add('active');
+        }
+
+        function closeLeaveModal() {
+            document.getElementById('leaveModal').classList.remove('active');
+        }
+
+        document.getElementById('leaveForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const leaveData = {
+                employee_id: document.getElementById('leaveEmployee').value,
+                tanggal_mulai: document.getElementById('leaveTanggalMulai').value,
+                tanggal_selesai: document.getElementById('leaveTanggalSelesai').value,
+                jenis_cuti: document.getElementById('leaveJenisCuti').value,
+                alasan: document.getElementById('leaveAlasan').value,
+                status: 'Pending'
+            };
+            
+            const { error } = await supabaseClient
+                .from('leave_requests')
+                .insert([leaveData]);
+            
+            if (!error) {
+                showAlert('leaveAlert', 'Permohonan cuti berhasil diajukan!', 'success');
+                closeLeaveModal();
+                loadLeaveRequests();
+                loadDashboardStats();
+            } else {
+                alert('Error: ' + error.message);
+            }
+        });
+
+        async function updateLeaveStatus(id, status) {
+            if (confirm(`Yakin ingin ${status === 'Approved' ? 'menyetujui' : 'menolak'} permohonan cuti ini?`)) {
+                const { error } = await supabaseClient
+                    .from('leave_requests')
+                    .update({ 
+                        status,
+                        approved_at: new Date().toISOString(),
+                        approved_by: currentUser.id
+                    })
+                    .eq('id', id);
+                
+                if (!error) {
+                    showAlert('leaveAlert', `Cuti berhasil ${status === 'Approved' ? 'disetujui' : 'ditolak'}`, 'success');
+                    loadLeaveRequests();
+                    loadDashboardStats();
+                }
+            }
+        }
+
+        function showAlert(elementId, message, type) {
+            const alert = document.getElementById(elementId);
+            alert.textContent = message;
+            alert.className = `alert alert-${type} active`;
+            
+            setTimeout(() => {
+                alert.classList.remove('active');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
