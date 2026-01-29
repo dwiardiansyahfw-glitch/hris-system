@@ -1,243 +1,196 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - HRIS System</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👥</text></svg>">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: '#3B82F6',
-                        secondary: '#1E40AF'
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
 
-<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👥</text></svg>">
+
+<style>
+    /* Custom gradient background */
+    .bg-gradient-hris {
+        background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 50%, #1E3A8A 100%);
+    }
     
-    <!-- Login Card -->
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
-        
-        <!-- Logo & Title -->
-        <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-            </div>
-            <h1 class="text-2xl font-bold text-gray-800">HRIS System</h1>
-            <p class="text-gray-500 mt-2">Silakan login untuk melanjutkan</p>
+    /* Spinner animation */
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .spinner {
+        animation: spin 1s linear infinite;
+    }
+    
+    /* Fade in animation */
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(-10px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    .fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+    
+    /* Pulse animation for logo */
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+    
+    .pulse {
+        animation: pulse 2s ease-in-out infinite;
+    }
+</style>
+
+<!-- Main Container -->
+<div class="text-center px-4">
+    
+    <!-- Logo/Brand -->
+    <div class="mb-8 fade-in">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl mb-4 pulse">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
         </div>
-        
-        <!-- Login Form -->
-        <form id="loginForm" class="space-y-6">
-            
-            <!-- Email Field -->
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                    Email
-                </label>
-                <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
-                    required
-                    autocomplete="email"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                    placeholder="admin@company.com"
-                >
-            </div>
-            
-            <!-- Password Field -->
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                    Password
-                </label>
-                <div class="relative">
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password" 
-                        required
-                        autocomplete="current-password"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition pr-12"
-                        placeholder="••••••••"
-                    >
-                    <button 
-                        type="button" 
-                        id="togglePassword"
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                    >
-                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Error Message -->
-            <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                    </svg>
-                    <span id="errorText"></span>
-                </div>
-            </div>
-            
-            <!-- Submit Button -->
-            <button 
-                type="submit" 
-                id="loginBtn"
-                class="w-full bg-primary hover:bg-secondary text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center"
-            >
-                <span id="loginBtnText">Login</span>
-                <svg id="loginSpinner" class="hidden animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-            </button>
-            
-        </form>
-        
-        <!-- Footer -->
-        <div class="mt-8 text-center text-sm text-gray-500">
-            <p>&copy; 2025 HRIS System. All rights reserved.</p>
-        </div>
-        
+        <h1 class="text-2xl font-bold text-white tracking-wide">HRIS</h1>
+        <p class="text-blue-200 text-sm mt-1">HR Management System</p>
     </div>
     
-    <!-- ============================================
-         SCRIPTS
-         ============================================ -->
+    <!-- Loading State -->
+    <div id="loadingState" class="fade-in">
+        <div class="flex flex-col items-center justify-center">
+            <!-- Spinner -->
+            <div class="spinner w-10 h-10 border-4 border-white/30 border-t-white rounded-full mb-4"></div>
+            <!-- Loading Text -->
+            <p class="text-white text-lg font-medium">Memuat...</p>
+            <p class="text-blue-200 text-sm mt-2">Memeriksa sesi login</p>
+        </div>
+    </div>
     
-    <!-- Supabase JS Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Error State (Hidden by default) -->
+    <div id="errorState" class="hidden fade-in">
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 max-w-sm mx-auto">
+            <!-- Error Icon -->
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-red-500/20 rounded-full mb-4">
+                <svg class="w-8 h-8 text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            <!-- Error Message -->
+            <h2 class="text-white text-lg font-semibold mb-2">Terjadi Kesalahan</h2>
+            <p id="errorMessage" class="text-blue-200 text-sm mb-6">Gagal memeriksa status login. Silakan coba lagi.</p>
+            <!-- Retry Button -->
+            <button id="retryButton" onclick="checkSession()" class="w-full bg-white text-blue-600 font-semibold py-3 px-6 rounded-xl hover:bg-blue-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600">
+                <span class="flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Coba Lagi
+                </span>
+            </button>
+            <!-- Manual Login Link -->
+            <a href="login.html" class="inline-block mt-4 text-blue-200 hover:text-white text-sm transition-colors duration-200">
+                atau langsung ke halaman login →
+            </a>
+        </div>
+    </div>
     
-    <!-- App Scripts -->
-    <script src="assets/js/config.js"></script>
-    <script src="assets/js/supabase-client.js"></script>
-    <script src="assets/js/auth.js"></script>
+    <!-- Footer -->
+    <div class="mt-12 fade-in">
+        <p class="text-blue-300/60 text-xs">© 2025 HRIS System. All rights reserved.</p>
+    </div>
     
-    <!-- Page Script -->
-    <script>
-        // Initialize Supabase
-        initSupabase();
+</div>
+
+<!-- Scripts -->
+<script src="config.js"></script>
+<script src="supabase-client.js"></script>
+<script src="auth.js"></script>
+
+<script>
+    // DOM Elements
+    const loadingState = document.getElementById('loadingState');
+    const errorState = document.getElementById('errorState');
+    const errorMessage = document.getElementById('errorMessage');
+    
+    // Show loading state
+    function showLoading() {
+        loadingState.classList.remove('hidden');
+        errorState.classList.add('hidden');
+    }
+    
+    // Show error state
+    function showError(message) {
+        loadingState.classList.add('hidden');
+        errorState.classList.remove('hidden');
+        errorMessage.textContent = message || 'Gagal memeriksa status login. Silakan coba lagi.';
+    }
+    
+    // Redirect to page
+    function redirectTo(page) {
+        window.location.href = page;
+    }
+    
+    // Check session and redirect accordingly
+    async function checkSession() {
+        showLoading();
         
-        // Check if already logged in
-        (async function() {
-            const session = await getCurrentSession();
+        try {
+            // Small delay for UX (shows loading state)
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // Check if supabase client is available
+            if (typeof supabase === 'undefined') {
+                throw new Error('Supabase client tidak tersedia. Periksa konfigurasi.');
+            }
+            
+            // Get current session from Supabase
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            if (error) {
+                throw error;
+            }
+            
             if (session) {
-                window.location.href = 'pages/dashboard.html';
-            }
-        })();
-        
-        // Toggle Password Visibility
-        const togglePassword = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('password');
-        const eyeIcon = document.getElementById('eyeIcon');
-        
-        togglePassword.addEventListener('click', function() {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            
-            // Change icon
-            if (type === 'text') {
-                eyeIcon.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                `;
+                // User is logged in - redirect to dashboard
+                console.log('User logged in, redirecting to dashboard...');
+                redirectTo('dashboard.html');
             } else {
-                eyeIcon.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                `;
+                // User is not logged in - redirect to login
+                console.log('No session found, redirecting to login...');
+                redirectTo('login.html');
             }
-        });
-        
-        // Login Form Handler
-        const loginForm = document.getElementById('loginForm');
-        const loginBtn = document.getElementById('loginBtn');
-        const loginBtnText = document.getElementById('loginBtnText');
-        const loginSpinner = document.getElementById('loginSpinner');
-        const errorMessage = document.getElementById('errorMessage');
-        const errorText = document.getElementById('errorText');
-        
-        function showError(message) {
-            errorText.textContent = message;
-            errorMessage.classList.remove('hidden');
+            
+        } catch (error) {
+            console.error('Session check error:', error);
+            showError(error.message || 'Terjadi kesalahan saat memeriksa sesi.');
         }
-        
-        function hideError() {
-            errorMessage.classList.add('hidden');
-        }
-        
-        function setLoading(isLoading) {
-            if (isLoading) {
-                loginBtn.disabled = true;
-                loginBtnText.textContent = 'Loading...';
-                loginSpinner.classList.remove('hidden');
-            } else {
-                loginBtn.disabled = false;
-                loginBtnText.textContent = 'Login';
-                loginSpinner.classList.add('hidden');
-            }
-        }
-        
-        loginForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            hideError();
-            
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            
-            // Validation
-            if (!email || !password) {
-                showError('Email dan password harus diisi');
-                return;
-            }
-            
-            setLoading(true);
-            
-            try {
-                const result = await Auth.login(email, password);
-                
-                if (result.success) {
-                    // Redirect to dashboard
-                    window.location.href = 'pages/dashboard.html';
-                } else {
-                    showError(result.error || 'Login gagal. Silakan coba lagi.');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                showError('Terjadi kesalahan. Silakan coba lagi.');
-            } finally {
-                setLoading(false);
-            }
-        });
-    </script>
+    }
     
-</body>
-</html>
+    // Listen for auth state changes (optional enhancement)
+    function setupAuthListener() {
+        if (typeof supabase !== 'undefined') {
+            supabase.auth.onAuthStateChange((event, session) => {
+                console.log('Auth state changed:', event);
+                if (event === 'SIGNED_IN' && session) {
+                    redirectTo('dashboard.html');
+                }
+            });
+        }
+    }
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        // Setup auth listener first
+        setupAuthListener();
+        
+        // Then check current session
+        checkSession();
+    });
+    
+    // Fallback: If scripts fail to load, show error after timeout
+    setTimeout(() => {
+        if (typeof supabase === 'undefined') {
+            showError('Gagal memuat aplikasi. Periksa koneksi internet Anda.');
+        }
+    }, 5000);
+</script>
