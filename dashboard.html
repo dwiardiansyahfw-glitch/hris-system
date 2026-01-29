@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - HRIS System</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { primary: '#3B82F6', secondary: '#1E40AF' }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar {
+            width: 260px;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 40;
+            transition: transform 0.3s ease;
+            background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);
+        }
+        .sidebar.hidden-mobile { transform: translateX(-100%); }
+        .sidebar-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            margin: 4px 12px;
+        }
+        .sidebar-menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .sidebar-menu-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 600;
+        }
+        .sidebar-menu-item svg { width: 20px; height: 20px; margin-right: 12px; }
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+        .main-content.expanded { margin-left: 0; }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 35;
+        }
+        .overlay.active { display: block; }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    
+    <!-- Mobile Overlay -->
+    <div id="overlay" class="overlay"></div>
+    
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar">
+        
+        <!-- Logo -->
+        <div class="p-6 border-b border-white/10">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-white font-bold text-lg">HRIS</h1>
+                    <p class="text-white/60 text-xs">Management System</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="mt-6 flex-1">
+            <a href="dashboard.html" class="sidebar-menu-item active">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Dashboard
+            </a>
+            
+            <a href="employees.html" class="sidebar-menu-item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                Karyawan
+            </a>
+            
+            <a href="attendance.html" class="sidebar-menu-item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Absensi
+            </a>
+            
+            <a href="leave.html" class="sidebar-menu-item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Cuti
+            </a>
+            
+            <!-- Admin Only Menu -->
+            <div id="adminMenu" class="hidden">
+                <div class="px-4 py-3 mt-4">
+                    <p class="text-white/40 text-xs font-semibold uppercase tracking-wider">Admin</p>
+                </div>
+                
+                <a href="departments.html" class="sidebar-menu-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    Departemen
+                </a>
+                
+                <a href="positions.html" class="sidebar-menu-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Jabatan
+                </a>
+                
+                <a href="users.html" class="sidebar-menu-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Users
+                </a>
+            </div>
+        </nav>
+        
+        <!-- Logout -->
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
+            <button id="logoutBtn" class="sidebar-menu-item w-full text-red-300 hover:text-red-100 hover:bg-red-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Logout
+            </button>
+        </div>
+    </aside>
+    
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        
+        <!-- Header -->
+        <header class="bg-white shadow-sm sticky top-0 z-30">
+            <div class="flex items-center justify-between px-6 py-4">
+                <button id="menuToggle" class="lg:hidden p-2 rounded-lg hover:bg-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                
+                <div class="flex-1 ml-4 lg:ml-0">
+                    <h1 class="text-xl font-semibold text-gray-800">Dashboard</h1>
+                    <p class="text-sm text-gray-500" id="currentDate">Loading...</p>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-medium text-gray-800" id="userName">Loading...</p>
+                        <p class="text-xs text-gray-500" id="userRole">-</p>
+                    </div>
+                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                        <span class="text-white font-semibold" id="userInitial">?</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Content -->
+        <div class="p-6">
+            
+            <!-- Welcome Banner -->
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 mb-6 text-white">
+                <h2 class="text-2xl font-bold mb-2">Selamat Datang! 👋</h2>
+                <p class="text-white/80" id="welcomeMessage">Memuat data...</p>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                
+                <!-- Total Karyawan -->
+                <div class="stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Total Karyawan</p>
+                            <p class="text-2xl font-bold text-gray-800" id="totalEmployees">-</p>
+                        </div>
+                        <div class="stat-icon bg-blue-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-green-600 mt-2"><span id="activeEmployees">0</span> karyawan aktif</p>
+                </div>
+                
+                <!-- Hadir Hari Ini -->
+                <div class="stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Hadir Hari Ini</p>
+                            <p class="text-2xl font-bold text-gray-800" id="todayPresent">-</p>
+                        </div>
+                        <div class="stat-icon bg-green-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">dari total karyawan</p>
+                </div>
+                
+                <!-- Pengajuan Cuti -->
+                <div class="stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Pengajuan Cuti</p>
+                            <p class="text-2xl font-bold text-gray-800" id="pendingLeave">-</p>
+                        </div>
+                        <div class="stat-icon bg-yellow-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-yellow-600 mt-2">menunggu persetujuan</p>
+                </div>
+                
+                <!-- Total Departemen -->
+                <div class="stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Total Departemen</p>
+                            <p class="text-2xl font-bold text-gray-800" id="totalDepartments">-</p>
+                        </div>
+                        <div class="stat-icon bg-purple-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">departemen terdaftar</p>
+                </div>
+            </div>
+            
+            <!-- Two Columns: Attendance & Leave Requests -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Recent Attendance -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800">Absensi Terbaru</h3>
+                        <p class="text-sm text-gray-500">Data kehadiran hari ini</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Nama</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Jam Masuk</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Jam Keluar</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentAttendance" class="divide-y divide-gray-200">
+                                <tr>
+                                    <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                                        <div class="flex flex-col items-center">
+                                            <svg class="w-8 h-8 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            Memuat data...
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Pending Leave Requests -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800">Pengajuan Cuti Pending</h3>
+                        <p class="text-sm text-gray-500">Menunggu persetujuan</p>
+                    </div>
+                    <div id="pendingLeaveList" class="divide-y divide-gray-200">
+                        <div class="px-6 py-8 text-center text-gray-500">
+                            <div class="flex flex-col items-center">
+                                <svg class="w-8 h-8 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                Memuat data...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+    
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase-client.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    
+    <script>
+        // Initialize Supabase
+        initSupabase();
+        
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const menuToggle = document.getElementById('menuToggle');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const adminMenu = document.getElementById('adminMenu');
+        
+        // Check Auth and Load Dashboard
+        (async function() {
+            try {
+                const session = await getCurrentSession();
+                if (!session) {
+                    window.location.href = '../index.html';
+                    return;
+                }
+                
+                // Load user profile
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+                
+                if (profile) {
+                    // Display user info
+                    document.getElementById('userName').textContent = profile.full_name || 'User';
+                    document.getElementById('userRole').textContent = formatRole(profile.role);
+                    document.getElementById('userInitial').textContent = getInitials(profile.full_name || 'U');
+                    document.getElementById('welcomeMessage').textContent = 
+                        `Halo ${profile.full_name || 'User'}, selamat bekerja! Semoga harimu menyenangkan.`;
+                    
+                    // Show admin menu for superadmin and admin roles
+                    if (profile.role === 'superadmin' || profile.role === 'admin') {
+                        adminMenu.classList.remove('hidden');
+                    }
+                }
+                
+                // Display current date
+                displayCurrentDate();
+                
+                // Load dashboard statistics
+                await loadDashboardStats();
+                
+                // Load recent attendance
+                await loadRecentAttendance();
+                
+                // Load pending leave requests
+                await loadPendingLeaveRequests();
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        })();
+        
+        // Format role for display
+        function formatRole(role) {
+            const roles = {
+                'superadmin': 'Super Admin',
+                'admin': 'Admin',
+                'user': 'Karyawan'
+            };
+            return roles[role] || role;
+        }
+        
+        // Get initials from name
+        function getInitials(name) {
+            return name
+                .split(' ')
+                .map(word => word.charAt(0))
+                .join('')
+                .toUpperCase()
+                .substring(0, 2);
+        }
+        
+        // Display current date in Indonesian
+        function displayCurrentDate() {
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            const today = new Date();
+            document.getElementById('currentDate').textContent = 
+                today.toLocaleDateString('id-ID', options);
+        }
+        
+        // Load Dashboard Statistics
+        async function loadDashboardStats() {
+            try {
+                // Total employees
+                const { count: totalEmployees } = await supabase
+                    .from('employees')
+                    .select('*', { count: 'exact', head: true });
+                
+                // Active employees
+                const { count: activeEmployees } = await supabase
+                    .from('employees')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'active');
+                
+                // Today's attendance
+                const today = new Date().toISOString().split('T')[0];
+                const { count: todayPresent } = await supabase
+                    .from('attendance')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('date', today);
+                
+                // Pending leave requests
+                const { count: pendingLeave } = await supabase
+                    .from('leave_requests')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'pending');
+                
+                // Total departments
+                const { count: totalDepartments } = await supabase
+                    .from('departments')
+                    .select('*', { count: 'exact', head: true });
+                
+                // Update UI
+                document.getElementById('totalEmployees').textContent = totalEmployees || 0;
+                document.getElementById('activeEmployees').textContent = activeEmployees || 0;
+                document.getElementById('todayPresent').textContent = todayPresent || 0;
+                document.getElementById('pendingLeave').textContent = pendingLeave || 0;
+                document.getElementById('totalDepartments').textContent = totalDepartments || 0;
+                
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        // Load Recent Attendance
+        async function loadRecentAttendance() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                
+                const { data: attendance, error } = await supabase
+                    .from('attendance')
+                    .select(`
+                        *,
+                        employees (
+                            full_name
+                        )
+                    `)
+                    .eq('date', today)
+                    .order('check_in', { ascending: false })
+                    .limit(5);
+                
+                const tbody = document.getElementById('recentAttendance');
+                
+                if (!attendance || attendance.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                                <div class="flex flex-col items-center">
+                                    <svg class="w-8 h-8 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Belum ada data absensi hari ini
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                tbody.innerHTML = attendance.map(item => `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">
+                            <div class="font-medium text-gray-800">${item.employees?.full_name || '-'}</div>
+                        </td>
+                        <td class="px-6 py-4 text-gray-600">${formatTime(item.check_in)}</td>
+                        <td class="px-6 py-4 text-gray-600">${formatTime(item.check_out)}</td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(item.status)}">
+                                ${formatStatus(item.status)}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error loading attendance:', error);
+            }
+        }
+        
+        // Load Pending Leave Requests
+        async function loadPendingLeaveRequests() {
+            try {
+                const { data: leaveRequests, error } = await supabase
+                    .from('leave_requests')
+                    .select(`
+                        *,
+                        employees (
+                            full_name
+                        )
+                    `)
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                const container = document.getElementById('pendingLeaveList');
+                
+                if (!leaveRequests || leaveRequests.length === 0) {
+                    container.innerHTML = `
+                        <div class="px-6 py-8 text-center text-gray-500">
+                            <div class="flex flex-col items-center">
+                                <svg class="w-8 h-8 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Tidak ada pengajuan cuti pending
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = leaveRequests.map(item => `
+                    <div class="px-6 py-4 hover:bg-gray-50">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-gray-800">${item.employees?.full_name || '-'}</p>
+                                <p class="text-sm text-gray-500">${formatLeaveType(item.leave_type)}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-gray-800">${formatDateRange(item.start_date, item.end_date)}</p>
+                                <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">
+                                    Pending
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error loading leave requests:', error);
+            }
+        }
+        
+        // Helper Functions
+        function formatTime(time) {
+            if (!time) return '-';
+            return time.substring(0, 5);
+        }
+        
+        function formatStatus(status) {
+            const statuses = {
+                'present': 'Hadir',
+                'late': 'Terlambat',
+                'absent': 'Tidak Hadir',
+                'leave': 'Cuti'
+            };
+            return statuses[status] || status;
+        }
+        
+        function getStatusClass(status) {
+            const classes = {
+                'present': 'bg-green-100 text-green-800',
+                'late': 'bg-yellow-100 text-yellow-800',
+                'absent': 'bg-red-100 text-red-800',
+                'leave': 'bg-blue-100 text-blue-800'
+            };
+            return classes[status] || 'bg-gray-100 text-gray-800';
+        }
+        
+        function formatLeaveType(type) {
+            const types = {
+                'annual': 'Cuti Tahunan',
+                'sick': 'Cuti Sakit',
+                'maternity': 'Cuti Melahirkan',
+                'other': 'Cuti Lainnya'
+            };
+            return types[type] || type;
+        }
+        
+        function formatDateRange(startDate, endDate) {
+            const start = new Date(startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+            const end = new Date(endDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+            return `${start} - ${end}`;
+        }
+        
+        // Mobile Menu Toggle
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        });
+        
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        });
+        
+        // Logout
+        logoutBtn.addEventListener('click', async () => {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                await Auth.logout();
+                window.location.href = '../index.html';
+            }
+        });
+    </script>
+    
+</body>
+</html>
